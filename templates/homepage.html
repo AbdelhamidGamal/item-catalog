@@ -1,14 +1,33 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>All Categorie</title>
-  </head>
-  <body>
-    <a href="{{ url_for("addNewCategory") }}">Add a new category</a>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
 
+<div class="row">
+<div class="col-sm-4">
+
+</div>
+<div class="col-sm-4">
+  <h1>Categories</h1>
+  <a href="{{ url_for("addNewCategory") }}">Add a new category</a>
+  <div class="list-group">
     {% for c in categories %}
-    <a href=" {{ url_for("showCategoryItems", name=c.name) }} "> <h1> {{ c.name }} </h1> </a>
+    <a href="{{ url_for("showCategoryItems", name=c.name) }}" class="list-group-item">{{ c.name }}</a>
     {% endfor %}
-  </body>
-</html>
+  </div>
+
+
+
+</div>
+<div class="col-sm-4">
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}

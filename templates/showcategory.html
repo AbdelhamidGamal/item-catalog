@@ -1,17 +1,25 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <a href="{{ url_for("homepage") }}">Return To Home</a><br>
-    <a href=" {{ url_for("addItem",name=category.name) }} ">Add new item</a>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row">
+<div class="col-sm-4">
 
-    {% for i in items %}
-    <a href="{{ url_for("ShowItem", name=category.name, title=i.title) }}"> <h2>{{ i.title }}</h2> </a>
+</div>
+<div class="col-sm-4">
+<a href="{{ url_for("homepage") }}">Home</a><br>
+<h1>Items</h1>
+<a href=" {{ url_for("addItem",name=category.name) }} ">Add a new item To {{ category.name }}</a>
+
+  <div class="list-group">
+  {% for i in items %}
+    <a href="{{ url_for("ShowItem", name=category.name, title=i.title) }}" class="list-group-item">{{ i.title }}</a>
     {% endfor %}
+  </div>
 
-    <br> <a href="{{ url_for("deleteCategory",name=category.name) }}">Delete This Category</a>
-  </body>
-</html>
+  <br> <a href="{{ url_for("deleteCategory",name=category.name) }}">Delete {{ category.name }}</a>
+  <br> <a href="{{ url_for("editCategory", name=category.name) }}">Edit {{ category.name }}</a>
+</div>
+<div class="col-sm-4">
+</div>
+</div>
+{% endblock %}

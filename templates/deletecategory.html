@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Delete category {{ category.name }}</title>
-  </head>
-  <body>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
     <form class="" action="{{ url_for("deleteCategory", name=category.name) }}" method="post">
       <label for="button">Delete category {{ category.name }} </label>
       <button type="submit" name="button">Confirm</button>
     </form>
-
-  </body>
-</html>
+{% endblock %}

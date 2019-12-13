@@ -40,6 +40,18 @@ def showCategoryItems(name):
     return render_template("showcategory.html", items=items, category=category)
 
 
+@app.route("/catalog/<string:name>/edit", methods=["GET","POST"])
+def editCategory(name):
+    category = session.query(Category).filter_by(name = name).one()
+    if request.method == "GET":
+        return render_template("editcategory.html", category=category)
+    if request.method == "POST":
+        category.name = request.form["name"]
+        session.add(category)
+        session.commit()
+        return redirect(url_for("showCategoryItems",name=category.name))
+
+
 @app.route("/catalog/<string:name>/delete", methods=["GET","POST"])
 def deleteCategory(name):
     category = session.query(Category).filter_by(name = name).one()
