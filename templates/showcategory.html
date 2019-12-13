@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <a href="{{ url_for("homepage") }}">Return To Home</a><br>
+    <a href=" {{ url_for("addItem",name=category.name) }} ">Add new item</a>
+
+    {% for i in items %}
+    <a href="{{ url_for("ShowItem", name=category.name, title=i.title) }}"> <h2>{{ i.title }}</h2> </a>
+    {% endfor %}
+
+    <br> <a href="{{ url_for("deleteCategory",name=category.name) }}">Delete This Category</a>
+  </body>
+</html>

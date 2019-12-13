@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Delete {{ item.title }} from {{ category.name }}</title>
+  </head>
+  <body>
+    <form class="" action="{{ url_for("deleteItem", name=category.name, title=item.title) }}" method="post">
+      <label for="submit">Confirm Deleteing ({{ item.title }}) from ({{ category.name }}) </label>
+      <button type="submit" name="button">Confirm</button>
+    </form>
+  </body>
+</html>

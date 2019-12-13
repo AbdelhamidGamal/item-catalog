@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ item.title }} from {{ category.name }}</title>
+  </head>
+  <body>
+    <a href=" {{url_for("showCategoryItems",name=category.name)}} ">Back to Category {{ category.name }} Page</a>
+
+    <h1> {{ item.title }} </h1>
+    <p> {{ item.description }} </p>
+    <a href="{{ url_for("editItem", name=category.name, title=item.title) }}">Edit Item</a>
+    <a href="{{ url_for("deleteItem", name=category.name, title=item.title) }}">Delete Item</a>
+  </body>
+</html>

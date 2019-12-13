@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>All Categorie</title>
+  </head>
+  <body>
+    <a href="{{ url_for("addNewCategory") }}">Add a new category</a>
+
+    {% for c in categories %}
+    <a href=" {{ url_for("showCategoryItems", name=c.name) }} "> <h1> {{ c.name }} </h1> </a>
+    {% endfor %}
+  </body>
+</html>
