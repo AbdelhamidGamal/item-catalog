@@ -2,7 +2,26 @@
   <div class="col-sm-4">
   </div>
   <div class="col-sm-4" style="background-color:white;">
-    <h1 style="color:black;font-weight:bold;text-align:center;">Catalog App</h1>
+    <h1 style="color:black;font-weight:bold;text-align:left;">Catalog App</h1>
+    {% with check = current_user.is_authenticated %}
+    {% if check  %}
+    <p>Hello {{ current_user.name }}     <a href="{{ url_for("logout") }}">Logout</a></p>
+    {% else %}
+    <div class="" style="text-align:right;">
+      <a href=" {{ url_for("login") }} ">Login</a>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
   </div>
   <div class="col-sm-4">
 

@@ -8,16 +8,19 @@
 <div class="col-sm-4">
 <a style="color:white;" href="{{ url_for("homepage") }}">Home</a><br>
 <h1 style="text-align:center;">{{ category.name }}</h1>
-<a style="color:white;" href=" {{ url_for("addItem",name=category.name) }} ">Add a new item To {{ category.name }}</a>
+{% if current_user.is_authenticated: %}
+  <a style="color:white;" href=" {{ url_for("addItem",name=category.name) }} ">Add a new item To {{ category.name }}</a>
+{% endif %}
 
   <div class="list-group">
   {% for i in items %}
     <a href="{{ url_for("ShowItem", name=category.name, title=i.title) }}" class="list-group-item">{{ i.title }}</a>
     {% endfor %}
   </div>
-
-  <br> <a style="color:white;" href="{{ url_for("deleteCategory",name=category.name) }}">Delete {{ category.name }}</a>
-  <br> <a style="color:white;" href="{{ url_for("editCategory", name=category.name) }}">Edit {{ category.name }}</a>
+  {% if current_user.is_authenticated: %}
+    <br> <a style="color:white;" href="{{ url_for("deleteCategory",name=category.name) }}">Delete {{ category.name }}</a>
+    <br> <a style="color:white;" href="{{ url_for("editCategory", name=category.name) }}">Edit {{ category.name }}</a>
+  {% endif %}
 </div>
 <div class="col-sm-4">
 </div>

@@ -10,10 +10,12 @@
    <div class="card panel-default">
      <div class="card-header">{{ item.title }}</div>
      <div class="card-body">{{ item.description }}</div>
-     <div class="card-footer text-center">
-     <a href="{{ url_for("editItem", name=category.name, title=item.title) }}">Edit Item</a>
-     <a href="{{ url_for("deleteItem", name=category.name, title=item.title) }}">Delete Item</a>
-     </div>
+     {% if current_user.is_authenticated %}
+       <div class="card-footer text-center">
+       <a href="{{ url_for("editItem", name=category.name, title=item.title) }}">Edit Item</a>
+       <a href="{{ url_for("deleteItem", name=category.name, title=item.title) }}">Delete Item</a>
+       </div>
+     {% endif %}
 
    </div>
  </div>

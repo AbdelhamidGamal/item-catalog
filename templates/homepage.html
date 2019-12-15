@@ -8,7 +8,11 @@
 </div>
 <div class="col-sm-4">
   <!-- <h1 style="text-align:center;">Categories</h1> -->
+  {% with check = current_user.is_authenticated %}
+  {% if check %}
   <a style="color:white;" href="{{ url_for("addNewCategory") }}">Add a new category</a>
+  {% endif %}
+  {% endwith %}
   <div class="list-group">
     {% for c in categories %}
     <a href="{{ url_for("showCategoryItems", name=c.name) }}" class="list-group-item">{{ c.name }}</a>

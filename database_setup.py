@@ -1,17 +1,45 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from flask_login import UserMixin
 
 Base = declarative_base()
+
+
+engine = create_engine('sqlite:///catalog.db')
+from sqlalchemy.orm import sessionmaker
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+class User(Base, UserMixin):
+    __tablename__ = "user"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+
+    @staticmethod
+    def get(user_email):
+        user = session.query(User).filter_by(id = user_email)
+        if not user:
+            return None
+        return user
+
+    @staticmethod
+    def create(id_, name, email):
+        user = User(id = id, name=name, email=email)
+        session.add(user)
+        session.commit()
 
 class Category(Base):
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
 
     @property
     def serialize(self):
@@ -40,7 +68,6 @@ class Item(Base):
         }
 
 
-engine = create_engine('sqlite:///catalog.db')
 
 
 Base.metadata.create_all(engine)
