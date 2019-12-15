@@ -1,8 +1,17 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-    <form class="" action="{{ url_for("deleteItem", name=category.name, title=item.title) }}" method="post">
-      <label for="submit">Confirm Deleteing ({{ item.title }}) from ({{ category.name }}) </label>
-      <button type="submit" name="button">Confirm</button>
-    </form>
+<div class="row">
+  <div class="col-sm-4">
+  </div>
+  <div class="col-sm-4">
+  <form class="" action="{{ url_for("deleteItem", name=category.name, title=item.title) }}" method="post">
+    <label for="submit">Confirm Deleteing ({{ item.title }}) from ({{ category.name }}) </label>
+    <button type="submit" name="button">Confirm</button>
+  </form>
+  </div>
+  <div class="col-sm-4">
+  </div>
+</div>
+
 {% endblock %}

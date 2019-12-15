@@ -143,6 +143,25 @@ def logout():
     logout_user()
     return redirect(url_for("homepage"))
 
+
+# JSON Endpoints
+@app.route("/categorys/json")
+def json_categorys():
+    cats = session.query(Category).all()
+    return jsonify(Category=[c.serialize for c in cats])
+
+@app.route("/items/json")
+def json_items():
+    cats = session.query(Item).all()
+    return jsonify(Item=[c.serialize for c in cats])
+
+@app.route("/catalog/<string:category>/json")
+def json_items_for_a_category(category):
+    zcategory = session.query(Category).filter_by(name=category).one()
+    cats = session.query(Item).filter_by(cat_id=zcategory.id).all()
+    return jsonify(Item=[c.serialize for c in cats])
+
+
 # homepage route
 @app.route("/")
 @app.route("/catalog")
@@ -222,15 +241,20 @@ def ShowItem(name,title):
 @app.route("/catalog/<string:name>/<string:title>/edit", methods=["GET","POST"])
 @login_required
 def editItem(name,title):
+    categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=name).one()
     item = session.query(Item).filter_by(title=title, category=category).one()
     if request.method == "GET":
-        return render_template("edititem.html", category=category, item=item)
+        return render_template("edititem.html", category=category, item=item, categories=categories)
     if request.method == "POST":
         if request.form["name"]:
             item.title = request.form["name"]
         if request.form["description"]:
             item.description = request.form["description"]
+        if request.form["category"]:
+            item.cat_id =  request.form["category"]
+            c = session.query(Category).filter_by(id=request.form["category"]).one()
+            name = c.name
         session.add(item)
         session.commit()
         return redirect(url_for("ShowItem", name=name, title=item.title))
