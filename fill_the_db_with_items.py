@@ -16,6 +16,7 @@ def CreateCategory(n):
 
 def CreateItem(t,d,c):
     i = Item(title=t,description=d,cat_id=c)
+    i.user_id = 1
     session.add(i)
     session.commit()
 

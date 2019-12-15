@@ -1,9 +1,11 @@
+#!/usr/bin/python3
 import os
 import json
-#flask
-from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
+# flask
+from flask import Flask, render_template, url_for
+from flask import request, redirect, flash, jsonify
 
-#flask_login
+# flask_login
 from flask_login import (
     LoginManager,
     current_user,
@@ -15,14 +17,15 @@ from flask_login import (
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 
-#sqlalchemy
+# sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///catalog.db',connect_args={'check_same_thread': False})
+engine = create_engine('sqlite:///catalog.db',
+                       connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -30,7 +33,8 @@ session = DBSession()
 
 
 # Configuration for google login
-GOOGLE_CLIENT_ID = "270506281277-lnker6mn10m0u3u17oaqunc4l0h57l9h.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = (
+    "270506281277-lnker6mn10m0u3u17oaqunc4l0h57l9h.apps.googleusercontent.com")
 GOOGLE_CLIENT_SECRET = "J0lSHHPwfKYYgJ6Dcl7nFO-5"
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
@@ -47,13 +51,14 @@ login_manager.init_app(app)
 # Flask-Login helper to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
-    return session.query(User).filter_by(id = user_id).one()
+    return session.query(User).filter_by(id=user_id).one()
+
 
 # retrieving Googles provider configuration
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
-#login page
+# login page
 @app.route("/login")
 def login():
     # Find out what URL to hit for Google login
@@ -69,8 +74,8 @@ def login():
     )
     return redirect(request_uri)
 
-
-@app.route("/login/callback", methods=["GET","POST"])
+# callback page
+@app.route("/login/callback", methods=["GET", "POST"])
 def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
@@ -119,24 +124,24 @@ def callback():
 
     # Create a user in your db with the information provided
     # by Google
-    find_user = session.query(User).filter_by(email = users_email).all()
+    find_user = session.query(User).filter_by(email=users_email).all()
     # Doesn't exist? Add it to the database.
     if not find_user:
-        user = User(name = users_name, email=users_email)
+        user = User(name=users_name, email=users_email)
         session.add(user)
         session.commit()
         # Begin user session by logging the user in
         login_user(user)
     else:
         # Begin user session by logging the user in
-        user = session.query(User).filter_by(email = users_email).one()
+        user = session.query(User).filter_by(email=users_email).one()
         login_user(user)
     print(current_user.is_authenticated)
     # Send user back to homepage
     return redirect(url_for("homepage"))
 
 
-#logout a user
+# logout a user
 @app.route("/logout")
 @login_required
 def logout():
@@ -150,10 +155,12 @@ def json_categorys():
     cats = session.query(Category).all()
     return jsonify(Category=[c.serialize for c in cats])
 
+
 @app.route("/items/json")
 def json_items():
     cats = session.query(Item).all()
     return jsonify(Item=[c.serialize for c in cats])
+
 
 @app.route("/catalog/<string:category>/json")
 def json_items_for_a_category(category):
@@ -167,20 +174,21 @@ def json_items_for_a_category(category):
 @app.route("/catalog")
 def homepage():
     allcategories = session.query(Category).all()
-    return render_template("homepage.html",categories = allcategories )
+    return render_template("homepage.html", categories=allcategories)
 
-#Add a new Category
-@app.route("/catalog/newcategory", methods=["GET","POST"])
+# Add a new Category
+@app.route("/catalog/newcategory", methods=["GET", "POST"])
 @login_required
 def addNewCategory():
     if request.method == "GET":
         return render_template("newcategory.html")
     if request.method == "POST":
-        check_category = session.query(Category).filter_by(name = request.form["name"]).all()
+        check_category = session.query(Category).filter_by(
+                            name=request.form["name"]).all()
         if check_category:
             flash("Category already exits!")
             return redirect(url_for("homepage"))
-        newcategory = Category(name= request.form["name"])
+        newcategory = Category(name=request.form["name"])
         session.add(newcategory)
         session.commit()
         return redirect(url_for("homepage"))
@@ -188,28 +196,28 @@ def addNewCategory():
 # category page
 @app.route("/catalog/<string:name>/items")
 def showCategoryItems(name):
-    category = session.query(Category).filter_by(name = name).one()
+    category = session.query(Category).filter_by(name=name).one()
     items = session.query(Item).filter_by(category=category).all()
     return render_template("showcategory.html", items=items, category=category)
 
 # Edit a category
-@app.route("/catalog/<string:name>/edit", methods=["GET","POST"])
+@app.route("/catalog/<string:name>/edit", methods=["GET", "POST"])
 @login_required
 def editCategory(name):
-    category = session.query(Category).filter_by(name = name).one()
+    category = session.query(Category).filter_by(name=name).one()
     if request.method == "GET":
         return render_template("editcategory.html", category=category)
     if request.method == "POST":
         category.name = request.form["name"]
         session.add(category)
         session.commit()
-        return redirect(url_for("showCategoryItems",name=category.name))
+        return redirect(url_for("showCategoryItems", name=category.name))
 
 # Delete a category
-@app.route("/catalog/<string:name>/delete", methods=["GET","POST"])
+@app.route("/catalog/<string:name>/delete", methods=["GET", "POST"])
 @login_required
 def deleteCategory(name):
-    category = session.query(Category).filter_by(name = name).one()
+    category = session.query(Category).filter_by(name=name).one()
     if request.method == "GET":
         return render_template("deletecategory.html", category=category)
     if request.method == "POST":
@@ -217,63 +225,70 @@ def deleteCategory(name):
         session.commit()
         return redirect(url_for("homepage"))
 
-#add item to a category
-@app.route("/catalog/<string:name>/additem", methods=["GET","POST"])
+# add item to a category
+@app.route("/catalog/<string:name>/additem", methods=["GET", "POST"])
 @login_required
 def addItem(name):
     category = session.query(Category).filter_by(name=name).one()
     if request.method == "GET":
         return render_template("newitem.html", category=category)
     if request.method == "POST":
-        newitem = Item(title = request.form["name"], description = request.form["description"], category=category)
+        newitem = Item(title=request.form["name"],
+                       description=request.form["description"],
+                       category=category, user_id=current_user.id)
         session.add(newitem)
         session.commit()
         return redirect(url_for("showCategoryItems", name=category.name))
 
-#show a certain item details from a category
+# show a certain item details from a category
 @app.route("/catalog/<string:name>/<string:title>")
-def ShowItem(name,title):
+def ShowItem(name, title):
     category = session.query(Category).filter_by(name=name).one()
     item = session.query(Item).filter_by(title=title, category=category).one()
     return render_template("showitem.html", item=item, category=category)
 
-#edit item
-@app.route("/catalog/<string:name>/<string:title>/edit", methods=["GET","POST"])
+# edit item
+@app.route("/catalog/<string:name>/<string:title>/edit",
+           methods=["GET", "POST"])
 @login_required
-def editItem(name,title):
+def editItem(name, title):
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=name).one()
     item = session.query(Item).filter_by(title=title, category=category).one()
     if request.method == "GET":
-        return render_template("edititem.html", category=category, item=item, categories=categories)
-    if request.method == "POST":
+        return render_template("edititem.html", category=category,
+                               item=item, categories=categories)
+    if request.method == "POST" and item.user_id == current_user.id:
         if request.form["name"]:
             item.title = request.form["name"]
         if request.form["description"]:
             item.description = request.form["description"]
         if request.form["category"]:
-            item.cat_id =  request.form["category"]
-            c = session.query(Category).filter_by(id=request.form["category"]).one()
+            item.cat_id = request.form["category"]
+            c = session.query(Category).filter_by(
+                id=request.form["category"]).one()
             name = c.name
         session.add(item)
         session.commit()
         return redirect(url_for("ShowItem", name=name, title=item.title))
+    else:
+        return "you don't own this item to edit it!", 400
 
-
-#delete item
-@app.route("/catalog/<string:name>/<string:title>/delete", methods=["GET","POST"])
+# delete item
+@app.route("/catalog/<string:name>/<string:title>/delete",
+           methods=["GET", "POST"])
 @login_required
-def deleteItem(name,title):
+def deleteItem(name, title):
     category = session.query(Category).filter_by(name=name).one()
     item = session.query(Item).filter_by(title=title, category=category).one()
     if request.method == "GET":
         return render_template("deleteitem.html", category=category, item=item)
-    if request.method == "POST":
+    if request.method == "POST" and item.user_id == current_user.id:
         session.delete(item)
         session.commit()
         return redirect(url_for("showCategoryItems", name=name))
-
-
+    else:
+        return "You don't own this item to delete it!", 400
 
 
 if __name__ == "__main__":
