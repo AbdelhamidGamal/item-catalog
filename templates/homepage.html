@@ -7,8 +7,8 @@
 
 </div>
 <div class="col-sm-4">
-  <h1>Categories</h1>
-  <a href="{{ url_for("addNewCategory") }}">Add a new category</a>
+  <!-- <h1 style="text-align:center;">Categories</h1> -->
+  <a style="color:white;" href="{{ url_for("addNewCategory") }}">Add a new category</a>
   <div class="list-group">
     {% for c in categories %}
     <a href="{{ url_for("showCategoryItems", name=c.name) }}" class="list-group-item">{{ c.name }}</a>

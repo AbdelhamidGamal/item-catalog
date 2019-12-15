@@ -1,7 +1,4 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
-from flask import session as login_session
-import random, string
-
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

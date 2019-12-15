@@ -6,9 +6,9 @@
 
 </div>
 <div class="col-sm-4">
-<a href="{{ url_for("homepage") }}">Home</a><br>
-<h1>Items</h1>
-<a href=" {{ url_for("addItem",name=category.name) }} ">Add a new item To {{ category.name }}</a>
+<a style="color:white;" href="{{ url_for("homepage") }}">Home</a><br>
+<h1 style="text-align:center;">{{ category.name }}</h1>
+<a style="color:white;" href=" {{ url_for("addItem",name=category.name) }} ">Add a new item To {{ category.name }}</a>
 
   <div class="list-group">
   {% for i in items %}
@@ -16,8 +16,8 @@
     {% endfor %}
   </div>
 
-  <br> <a href="{{ url_for("deleteCategory",name=category.name) }}">Delete {{ category.name }}</a>
-  <br> <a href="{{ url_for("editCategory", name=category.name) }}">Edit {{ category.name }}</a>
+  <br> <a style="color:white;" href="{{ url_for("deleteCategory",name=category.name) }}">Delete {{ category.name }}</a>
+  <br> <a style="color:white;" href="{{ url_for("editCategory", name=category.name) }}">Edit {{ category.name }}</a>
 </div>
 <div class="col-sm-4">
 </div>
