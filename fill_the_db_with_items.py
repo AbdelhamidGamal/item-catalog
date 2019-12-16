@@ -10,13 +10,12 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def CreateCategory(n):
-    c = Category(name=n)
+    c = Category(name=n, user_id=1)
     session.add(c)
     session.commit()
 
 def CreateItem(t,d,c):
-    i = Item(title=t,description=d,cat_id=c)
-    i.user_id = 1
+    i = Item(title=t,description=d,cat_id=c,user_id=1)
     session.add(i)
     session.commit()
 

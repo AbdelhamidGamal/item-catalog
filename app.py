@@ -188,7 +188,8 @@ def addNewCategory():
         if check_category:
             flash("Category already exits!")
             return redirect(url_for("homepage"))
-        newcategory = Category(name=request.form["name"])
+        newcategory = Category(name=request.form["name"],
+                               user_id=current_user.id)
         session.add(newcategory)
         session.commit()
         return redirect(url_for("homepage"))
@@ -207,11 +208,13 @@ def editCategory(name):
     category = session.query(Category).filter_by(name=name).one()
     if request.method == "GET":
         return render_template("editcategory.html", category=category)
-    if request.method == "POST":
+    if request.method == "POST" and category.user_id == current_user.id:
         category.name = request.form["name"]
         session.add(category)
         session.commit()
         return redirect(url_for("showCategoryItems", name=category.name))
+    else:
+        return "you don't own this category to edit it!", 400
 
 # Delete a category
 @app.route("/catalog/<string:name>/delete", methods=["GET", "POST"])
@@ -220,10 +223,12 @@ def deleteCategory(name):
     category = session.query(Category).filter_by(name=name).one()
     if request.method == "GET":
         return render_template("deletecategory.html", category=category)
-    if request.method == "POST":
+    if request.method == "POST" and category.user_id == current_user.id:
         session.delete(category)
         session.commit()
         return redirect(url_for("homepage"))
+    else:
+        return "you don't own this category to edit it!", 400
 
 # add item to a category
 @app.route("/catalog/<string:name>/additem", methods=["GET", "POST"])
