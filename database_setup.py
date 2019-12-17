@@ -2,7 +2,7 @@ import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_login import UserMixin
@@ -60,7 +60,9 @@ class Item(Base):
     title = Column(String, nullable=False)
     description = Column(String)
     cat_id = Column(Integer, ForeignKey("category.id"))
-    category = relationship(Category)
+    category = relationship(Category,
+                            backref=backref("item",
+                                            cascade="all, delete-orphan"))
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship(User)
 

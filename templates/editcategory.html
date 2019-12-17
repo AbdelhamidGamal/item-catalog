@@ -7,7 +7,7 @@
   <div class="col-sm-4">
   <form class="" action="{{ url_for("editCategory", name=category.name) }}" method="post">
     <label for="name">New Name</label>
-    <input type="text" name="name" placeholder="{{ category.name }}">
+    <input type="text" name="name" placeholder="{{ category.name }}" required>
     <button type="button" name="button">Confirm</button>
   </form>
   </div>

@@ -48,6 +48,7 @@ client = WebApplicationClient(GOOGLE_CLIENT_ID)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+
 # Flask-Login helper to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
@@ -57,6 +58,7 @@ def load_user(user_id):
 # retrieving Googles provider configuration
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
+
 
 # login page
 @app.route("/login")
@@ -73,6 +75,7 @@ def login():
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
+
 
 # callback page
 @app.route("/login/callback", methods=["GET", "POST"])
@@ -169,12 +172,20 @@ def json_items_for_a_category(category):
     return jsonify(Item=[c.serialize for c in cats])
 
 
+@app.route("/catalog/<string:category>/<string:item>/json")
+def json_for_single_item(category, item):
+    zcategory = session.query(Category).filter_by(name=category).one()
+    item = session.query(Item).filter_by(cat_id=zcategory.id, title=item).one()
+    return jsonify(Item=item.serialize)
+
+
 # homepage route
 @app.route("/")
 @app.route("/catalog")
 def homepage():
     allcategories = session.query(Category).all()
     return render_template("homepage.html", categories=allcategories)
+
 
 # Add a new Category
 @app.route("/catalog/newcategory", methods=["GET", "POST"])
@@ -194,12 +205,14 @@ def addNewCategory():
         session.commit()
         return redirect(url_for("homepage"))
 
+
 # category page
 @app.route("/catalog/<string:name>/items")
 def showCategoryItems(name):
     category = session.query(Category).filter_by(name=name).one()
     items = session.query(Item).filter_by(category=category).all()
     return render_template("showcategory.html", items=items, category=category)
+
 
 # Edit a category
 @app.route("/catalog/<string:name>/edit", methods=["GET", "POST"])
@@ -216,6 +229,7 @@ def editCategory(name):
     else:
         return "you don't own this category to edit it!", 400
 
+
 # Delete a category
 @app.route("/catalog/<string:name>/delete", methods=["GET", "POST"])
 @login_required
@@ -230,6 +244,7 @@ def deleteCategory(name):
     else:
         return "you don't own this category to edit it!", 400
 
+
 # add item to a category
 @app.route("/catalog/<string:name>/additem", methods=["GET", "POST"])
 @login_required
@@ -238,6 +253,11 @@ def addItem(name):
     if request.method == "GET":
         return render_template("newitem.html", category=category)
     if request.method == "POST":
+        check_item = session.query(Item).filter_by(
+                     title=request.form["name"], cat_id=category.id).all()
+        if check_item:
+            flash("item already exits!")
+            return redirect(url_for("showCategoryItems", name=category.name))
         newitem = Item(title=request.form["name"],
                        description=request.form["description"],
                        category=category, user_id=current_user.id)
@@ -245,12 +265,14 @@ def addItem(name):
         session.commit()
         return redirect(url_for("showCategoryItems", name=category.name))
 
+
 # show a certain item details from a category
-@app.route("/catalog/<string:name>/<string:title>")
+@app.route("/catalog/<string:name>/<string:title>/")
 def ShowItem(name, title):
     category = session.query(Category).filter_by(name=name).one()
     item = session.query(Item).filter_by(title=title, category=category).one()
     return render_template("showitem.html", item=item, category=category)
+
 
 # edit item
 @app.route("/catalog/<string:name>/<string:title>/edit",
@@ -278,6 +300,7 @@ def editItem(name, title):
         return redirect(url_for("ShowItem", name=name, title=item.title))
     else:
         return "you don't own this item to edit it!", 400
+
 
 # delete item
 @app.route("/catalog/<string:name>/<string:title>/delete",

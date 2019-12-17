@@ -5,10 +5,10 @@
     <h1 style="color:black;font-weight:bold;text-align:left;">Catalog App</h1>
     {% with check = current_user.is_authenticated %}
     {% if check  %}
-    <p>Hello {{ current_user.name }}     <a href="{{ url_for("logout") }}">Logout</a></p>
+    <p>Hello {{ current_user.name }}     <button style="float: right;font-family:'Comic Sans MS';" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button></p>
     {% else %}
     <div class="" style="text-align:right;">
-      <a href=" {{ url_for("login") }} ">Google Login</a>
+      <button style="float: right;font-family:'Comic Sans MS';" onclick="window.location.href='{{ url_for('login') }}'">Google Login</button>
     </div>
     {% endif %}
     {% endwith %}
